@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-cd "$(dirname "$0")"
 if [ "$1" = "" ] || [ "$2" = "" ]; then
     echo "Usage: helmet.sh <install|upgrade|delete|switch|generate|template> <branch>" && exit 1
 fi
@@ -35,8 +34,7 @@ fi
 
 if [ "$1" = "install" ]; then
     _context $_branch
-    helm install $CHART \
-        --name=$APP_NAME \
+    helm install $APP_NAME $CHART \
         --namespace=$NAMESPACE \
         $(_set $2) \
         $(_values $2)
@@ -93,8 +91,7 @@ if [ "$1" = "template" ]; then
     fi
 
     for f in $(find $PWD/.tmp-chart -mindepth 1 -type f -name '*.tgz'); do
-        helm template $f \
-            --name=$APP_NAME \
+        helm template $APP_NAME $f \
             --namespace=$NAMESPACE \
             $(_set $2) \
             $(_values $2) \
