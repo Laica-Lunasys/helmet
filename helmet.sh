@@ -50,7 +50,8 @@ fi
 
 if [ "$1" = "delete" ]; then
     _context $_branch
-    helm delete $APP_NAME --purge
+    helm delete $APP_NAME \
+        --namespace=$NAMESPACE
 fi
 
 if [ "$1" = "switch" ]; then
