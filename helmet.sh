@@ -72,8 +72,7 @@ if [ "$1" = "generate" ]; then
     fi
 
     for f in $(find $PWD/.tmp-chart -mindepth 1 -type f -name '*.tgz'); do
-        helm template $f \
-            --name=$APP_NAME \
+        helm template $APP_NAME $f \
             --namespace=$NAMESPACE \
             --output-dir $PWD/generated \
             $(_set $2) \
