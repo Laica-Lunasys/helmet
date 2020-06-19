@@ -23,6 +23,19 @@ _values() {
     fi
 }
 
+_check_repo() {
+    if [ "$CHART" != "." ]; then
+        if [ "$HELM_REPO_URL" = "" ]; then
+            echo "E: HELM_REPO_NAME not specified."
+            exit 1
+        fi
+        if ! helm repo list -o yaml | grep -qE "\s${HELM_REPO_NAME}$"; then
+            helm repo add $HELM_REPO_NAME $HELM_REPO_URL
+            helm repo update
+        fi
+    fi
+}
+
 if [ "$1" = "details" ]; then
     echo "CHART: ${CHART}"
     echo "APP_NAME: ${APP_NAME}"
@@ -34,6 +47,7 @@ fi
 
 if [ "$1" = "install" ]; then
     _context $_branch
+    _check_repo
     helm install $APP_NAME $CHART \
         --namespace=$NAMESPACE \
         $(_set $2) \
@@ -42,6 +56,7 @@ fi
 
 if [ "$1" = "upgrade" ]; then
     _context $_branch
+    _check_repo
     helm upgrade $APP_NAME $CHART \
         --namespace=$NAMESPACE \
         $(_set $2) \
@@ -50,6 +65,7 @@ fi
 
 if [ "$1" = "delete" ]; then
     _context $_branch
+    _check_repo
     helm delete $APP_NAME \
         --namespace=$NAMESPACE
 fi
@@ -59,6 +75,7 @@ if [ "$1" = "switch" ]; then
 fi
 
 if [ "$1" = "generate" ]; then
+    _check_repo
     mkdir -p $PWD/.tmp-chart
 
     if [ "$CHART" = "." ]; then
@@ -82,6 +99,7 @@ if [ "$1" = "generate" ]; then
 fi
 
 if [ "$1" = "template" ]; then
+    _check_repo
     mkdir -p $PWD/.tmp-chart
 
     if [ "$CHART" = "." ]; then
