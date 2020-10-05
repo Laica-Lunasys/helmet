@@ -29,7 +29,8 @@ if [ "$1" = "details" ]; then
     cd secrets
     echo ":: List of plain :"
     for f in $(find * -type f -not -name '*.enc'); do
-        echo "- $f"
+        KEY_NAME="${KEY_PREFIX}_$(echo $f | sed -e 's/\.[^\.]*$//' -e 's|/|_|g')"
+        echo "- $f ($KEY_NAME)"
     done
     echo ""
     echo ":: List of enc:"
